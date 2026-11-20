@@ -100,7 +100,10 @@ const atLeast = (v: EimzoVersion, min: EimzoVersion) =>
   v.major !== min.major ? v.major > min.major : v.minor >= min.minor;
 
 // Поля ответов E-IMZO, которые читает клиент. Значения не доверяем: проверяем перед использованием.
-interface VersionResponse { major?: string; minor?: string }
+interface VersionResponse {
+  major?: string;
+  minor?: string;
+}
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
 const isString = (value: unknown): value is string => typeof value === 'string';
@@ -263,7 +266,12 @@ export class Eimzo<TLogin = unknown> {
    * Поля ответа — `unknown`; `call<{ field: string }>(...)` задаёт тип ожидаемых полей,
    * но значения библиотека не проверяет — проверяйте их сами.
    */
-  call<R extends object = object>(plugin: string, name: string, args: unknown[] = [], options: EimzoCallOptions = {}): Promise<EimzoResponse & R> {
+  call<R extends object = object>(
+    plugin: string,
+    name: string,
+    args: unknown[] = [],
+    options: EimzoCallOptions = {},
+  ): Promise<EimzoResponse & R> {
     return this.guard(() => this.invoke<R>(plugin, name, args, { signal: options.signal }));
   }
 
@@ -396,7 +404,9 @@ export class Eimzo<TLogin = unknown> {
     if (typeof key === 'string') {
       keyId = key;
     } else if (key.type === 'pfx') {
-      keyId = (await this.invoke<{ keyId?: unknown }>('pfx', 'load_key', [key.disk, key.path, key.name, key.alias], queued)).keyId;
+      keyId = (
+        await this.invoke<{ keyId?: unknown }>('pfx', 'load_key', [key.disk, key.path, key.name, key.alias], queued)
+      ).keyId;
     } else {
       keyId = (await this.invoke<{ keyId?: unknown }>('ftjc', 'load_key', [key.cardUID], queued)).keyId;
     }
@@ -471,10 +481,15 @@ export class Eimzo<TLogin = unknown> {
     if (!keyId) throw new EimzoError('KEY_NOT_LOADED');
     const data64 = toBase64(data, options.base64 === true);
     const create = async (id: string): Promise<string> => {
-      const res = await this.invoke<{ pkcs7_64?: unknown }>('pkcs7', 'create_pkcs7', [data64, id, options.detached ? 'yes' : 'no'], {
-        signal: options.signal,
-        interruptible: false,
-      });
+      const res = await this.invoke<{ pkcs7_64?: unknown }>(
+        'pkcs7',
+        'create_pkcs7',
+        [data64, id, options.detached ? 'yes' : 'no'],
+        {
+          signal: options.signal,
+          interruptible: false,
+        },
+      );
       if (typeof res.pkcs7_64 !== 'string' || !res.pkcs7_64) {
         throw new EimzoError('EIMZO_ERROR', { reason: 'invalid pkcs7_64 in response' });
       }

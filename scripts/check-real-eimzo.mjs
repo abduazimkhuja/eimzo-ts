@@ -19,7 +19,8 @@ class LocalhostWebSocket extends WebSocket {
 const eimzo = createEimzo({ apiKeys: DEV_API_KEYS, WebSocketImpl: LocalhostWebSocket });
 const mask = (s) => (s ? s.replace(/\S/g, (c, i) => (i === 0 ? c : '*')) : '—');
 const fmt = (d) => (d ? d.toISOString().slice(0, 10) : '—');
-const describeError = (e) => `${e.code ?? e.name} | status=${e.status ?? '—'} | reason=${e.reason ?? '—'} | ${e.message}`;
+const describeError = (e) =>
+  `${e.code ?? e.name} | status=${e.status ?? '—'} | reason=${e.reason ?? '—'} | ${e.message}`;
 
 /**
  * `expectCode` — ожидаемая ошибка: её появление считается успехом шага.
@@ -78,7 +79,9 @@ async function interactiveChecks() {
   );
   console.log('>>> Окно 4: введите ВЕРНЫЙ пароль (ключ загрузится заново автоматически)');
   await step('sign после потери keyId → автоперезагрузка', () =>
-    eimzo.sign('test').then((p) => `PKCS#7 ${p.length} символов, keyId ${eimzo.keyId !== oldKeyId ? 'новый' : 'СТАРЫЙ'}`),
+    eimzo
+      .sign('test')
+      .then((p) => `PKCS#7 ${p.length} символов, keyId ${eimzo.keyId !== oldKeyId ? 'новый' : 'СТАРЫЙ'}`),
   );
 
   await step('unloadKey', () => eimzo.unloadKey().then(() => `keyId=${eimzo.keyId}`));

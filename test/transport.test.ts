@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createCapiwsTransport, createDefaultTransport, createFetchBackend, createWebSocketTransport, type CapiwsLike } from '../src';
+import {
+  createCapiwsTransport,
+  createDefaultTransport,
+  createFetchBackend,
+  createWebSocketTransport,
+  type CapiwsLike,
+} from '../src';
 
 type Behavior = { reply?: unknown; closeCode?: number; silent?: boolean };
 
@@ -31,8 +37,12 @@ describe('createWebSocketTransport', () => {
     let socket!: FakeWS;
     class FakeWS {
       onopen: (() => void) | null = null;
-      constructor() { socket = this; }
-      send() { throw new Error('send failed'); }
+      constructor() {
+        socket = this;
+      }
+      send() {
+        throw new Error('send failed');
+      }
       close = vi.fn();
     }
     const transport = createWebSocketTransport({ WebSocketImpl: FakeWS as unknown as typeof WebSocket });
@@ -59,7 +69,9 @@ describe('createWebSocketTransport', () => {
     let socket!: FakeWS;
     class FakeWS {
       onerror: (() => void) | null = null;
-      constructor() { socket = this; }
+      constructor() {
+        socket = this;
+      }
       close = vi.fn();
     }
     const transport = createWebSocketTransport({ WebSocketImpl: FakeWS as unknown as typeof WebSocket });
@@ -104,7 +116,9 @@ describe('createCapiwsTransport', () => {
     vi.useFakeTimers();
     let reply!: Parameters<CapiwsLike['version']>[0];
     vi.stubGlobal('EIMZOEXT', {
-      version: (ok: typeof reply) => { reply = ok; },
+      version: (ok: typeof reply) => {
+        reply = ok;
+      },
     });
     try {
       const result = createDefaultTransport({ timeoutMs: 10 })({ name: 'version' }).catch((e: unknown) => e);
@@ -179,12 +193,17 @@ describe('createFetchBackend', () => {
   });
 
   it('сохраняет HTTP-статус ошибки с HTML вместо JSON', async () => {
-    const backend = createFetchBackend({ loginUrl: '/l', fetch: vi.fn().mockResolvedValue(new Response('<html>error</html>', { status: 502 })) });
+    const backend = createFetchBackend({
+      loginUrl: '/l',
+      fetch: vi.fn().mockResolvedValue(new Response('<html>error</html>', { status: 502 })),
+    });
     await expect(backend.login!('P')).rejects.toMatchObject({ code: 'BACKEND_ERROR', httpStatus: 502 });
   });
 
   it('возвращает JSON приложения без изменения', async () => {
-    await expect(createFetchBackend({ loginUrl: '/l', fetch: respond({ token: 'test' }) }).login!('P')).resolves.toEqual({ token: 'test' });
+    await expect(
+      createFetchBackend({ loginUrl: '/l', fetch: respond({ token: 'test' }) }).login!('P'),
+    ).resolves.toEqual({ token: 'test' });
   });
 
   it('ответ login с полем status возвращается как есть: формат e-imzo-server проверяется только у challenge и timestamp', async () => {
@@ -199,7 +218,10 @@ describe('createFetchBackend', () => {
 
   it('timestamp без status: 1 — BACKEND_ERROR', async () => {
     const backend = createFetchBackend({ timestampUrl: '/t', fetch: respond({ status: -10, message: 'tsa down' }) });
-    await expect(backend.timestamp!('P')).rejects.toMatchObject({ code: 'BACKEND_ERROR', params: { detail: 'tsa down' } });
+    await expect(backend.timestamp!('P')).rejects.toMatchObject({
+      code: 'BACKEND_ERROR',
+      params: { detail: 'tsa down' },
+    });
   });
 
   it.each([
@@ -214,7 +236,9 @@ describe('createFetchBackend', () => {
   });
 
   it('challenge без поля status принимается (совместимость с 0.1.x)', async () => {
-    await expect(createFetchBackend({ challengeUrl: '/c', fetch: respond({ challenge: 'c1' }) }).getChallenge!()).resolves.toBe('c1');
+    await expect(
+      createFetchBackend({ challengeUrl: '/c', fetch: respond({ challenge: 'c1' }) }).getChallenge!(),
+    ).resolves.toBe('c1');
   });
 
   it('сетевая ошибка — BACKEND_ERROR с исходной ошибкой в cause', async () => {
@@ -237,7 +261,9 @@ describe('createFetchBackend', () => {
   });
 
   it('HTTP-ошибка и status != 1 — BACKEND_ERROR', async () => {
-    await expect(createFetchBackend({ loginUrl: '/l', fetch: respond({ message: 'no' }, 403) }).login!('P')).rejects.toMatchObject({
+    await expect(
+      createFetchBackend({ loginUrl: '/l', fetch: respond({ message: 'no' }, 403) }).login!('P'),
+    ).rejects.toMatchObject({
       code: 'BACKEND_ERROR',
       httpStatus: 403,
     });

@@ -65,9 +65,7 @@ export function parseX500(source: string): Record<string, string> {
 /** PFX отдаёт даты как `2022.09.24 17:29:21`, токены — в формате, понятном `Date`. */
 export function parseEimzoDate(value: string | undefined): Date | null {
   if (!value) return null;
-  const normalized = /^\d{4}\.\d{2}\.\d{2}/.test(value)
-    ? value.replace(/\./g, '-').replace(' ', 'T')
-    : value;
+  const normalized = /^\d{4}\.\d{2}\.\d{2}/.test(value) ? value.replace(/\./g, '-').replace(' ', 'T') : value;
   const date = new Date(normalized);
   return isNaN(date.getTime()) ? null : date;
 }

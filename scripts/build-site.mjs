@@ -58,12 +58,27 @@ function jsonLd(page, url) {
       mainEntity: items.map(([, q, a]) => ({
         '@type': 'Question',
         name: q.replace(/<[^>]+>/g, '').trim(),
-        acceptedAnswer: { '@type': 'Answer', text: a.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() },
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: a
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim(),
+        },
       })),
     };
   }
   if (page.type === 'TechArticle') {
-    return { '@context': 'https://schema.org', '@type': 'TechArticle', headline: page.title, description: page.description, url, inLanguage: page.lang, author, about: code };
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'TechArticle',
+      headline: page.title,
+      description: page.description,
+      url,
+      inLanguage: page.lang,
+      author,
+      about: code,
+    };
   }
   return { '@context': 'https://schema.org', ...code, inLanguage: page.lang };
 }
@@ -71,11 +86,13 @@ function jsonLd(page, url) {
 function render(page) {
   const url = SITE + page.path;
   const prefix = page.path ? '../'.repeat(page.path.split('/').filter(Boolean).length) : './';
-  const nav = NAV.map(([path, label]) =>
-    `<a href="${prefix}${path}"${path === page.path ? ' aria-current="page"' : ''}>${label}</a>`).join('\n      ');
-  const alternates = page.lang === 'ru' || page.path === ''
-    ? `\n  <link rel="alternate" hreflang="en" href="${SITE}">\n  <link rel="alternate" hreflang="ru" href="${SITE}ru/">`
-    : '';
+  const nav = NAV.map(
+    ([path, label]) => `<a href="${prefix}${path}"${path === page.path ? ' aria-current="page"' : ''}>${label}</a>`,
+  ).join('\n      ');
+  const alternates =
+    page.lang === 'ru' || page.path === ''
+      ? `\n  <link rel="alternate" hreflang="en" href="${SITE}">\n  <link rel="alternate" hreflang="ru" href="${SITE}ru/">`
+      : '';
   return `<!doctype html>
 <html lang="${page.lang}">
 <head>
@@ -114,14 +131,19 @@ ${page.body.trim()}
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
 
-const pages = readdirSync(join(root, 'site/pages')).filter((f) => f.endsWith('.html')).map(readPage);
+const pages = readdirSync(join(root, 'site/pages'))
+  .filter((f) => f.endsWith('.html'))
+  .map(readPage);
 for (const page of pages) {
   mkdirSync(join(out, page.path), { recursive: true });
   writeFileSync(join(out, page.path, 'index.html'), render(page));
 }
 
 const urls = [...pages.map((p) => p.path), 'demo/'].map((p) => `  <url><loc>${SITE}${p}</loc></url>`).join('\n');
-writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
+writeFileSync(
+  join(out, 'sitemap.xml'),
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
+);
 
 cpSync(join(root, 'site/assets'), join(out, 'assets'), { recursive: true });
 cpSync(join(root, 'site/llms.txt'), join(out, 'llms.txt'));
@@ -138,6 +160,9 @@ const full = [
   'skills/eimzo-ts/references/backend.md',
   'CHANGELOG.md',
 ].map((f) => `<!-- Source: ${REPO}/blob/main/${f} -->\n\n${readFileSync(join(root, f), 'utf8').trim()}\n`);
-writeFileSync(join(out, 'llms-full.txt'), `# eimzo-ts — full documentation (version ${pkg.version})\n\n${full.join('\n---\n\n')}`);
+writeFileSync(
+  join(out, 'llms-full.txt'),
+  `# eimzo-ts — full documentation (version ${pkg.version})\n\n${full.join('\n---\n\n')}`,
+);
 
 console.log(`_site: ${pages.length} pages, sitemap.xml, llms.txt, llms-full.txt, demo`);

@@ -20,3 +20,39 @@ jobs:
       - run: npm ci
       # lint, typecheck, тесты с порогами покрытия, сборка, publint и attw
       - run: npm run check
+
+  # Пакет заявляет Node >=20, а vitest 5 на 20 не запускается: проверяем сборку и импорт без тестов.
+  node20:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node -e "require('./dist/index.cjs').createEimzo()"
+      - run: node --input-type=module -e "import('./dist/index.js').then((m) => m.createEimzo())"
+
+  # Примеры собираются с пакетом из текущего кода (npm pack), а не с версией из npm.
+  examples:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        example: [vanilla-ts, react, vue, svelte, nextjs, nuxt, angular]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm pack
+      - working-directory: examples/${{ matrix.example }}
+        run: |
+          npm install
+          npm install --no-save ../../eimzo-ts-*.tgz
+          npm run build

@@ -7,7 +7,7 @@ export default defineConfig({
       include: ['src/**/*.ts'],
       reporter: ['text', 'html'],
       // Пороги чуть ниже текущего покрытия: падение заметит CI.
-      thresholds: { statements: 95, lines: 95, functions: 95, branches: 85 },
+      thresholds: { statements: 96, lines: 97, functions: 97, branches: 90 },
     },
   },
 });

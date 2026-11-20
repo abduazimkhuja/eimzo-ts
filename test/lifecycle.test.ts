@@ -5,7 +5,11 @@ import { fakeTransport, PFX_ALIAS, VERSION_486 } from './helpers';
 const key = { type: 'pfx', disk: 'C:\\', path: 'DSKEYS', name: 'key1', alias: PFX_ALIAS } as PfxKey;
 // Реальные ответы E-IMZO 6.3.5
 const KEY_NOT_FOUND = { success: false, status: -1010, reason: 'Ключ по идентификатору не найден' };
-const UNLOAD_NOT_FOUND = { success: false, status: -1014, reason: "Идентификатор ключа типа 'PFX_KEY_STORE' не найден" };
+const UNLOAD_NOT_FOUND = {
+  success: false,
+  status: -1014,
+  reason: "Идентификатор ключа типа 'PFX_KEY_STORE' не найден",
+};
 
 const signCalls = (calls: EimzoRequest[]) => calls.filter((c) => c.name === 'create_pkcs7');
 
@@ -52,7 +56,7 @@ describe('unloadKey / смена ключа', () => {
       'pkcs7.create_pkcs7': { success: true, pkcs7_64: 'SIGNED' },
     });
     const eimzo = createEimzo({ transport });
-    const selected = type === 'pfx' ? key : { type: 'ftjc', cardUID: 'TEST' } as TokenKey;
+    const selected = type === 'pfx' ? key : ({ type: 'ftjc', cardUID: 'TEST' } as TokenKey);
     await expect(eimzo.loadKey(selected, { verifyPassword: true })).resolves.toBe('K1');
     expect(calls.find((c) => c.name.startsWith('verify_'))?.arguments).toEqual(type === 'pfx' ? ['K1'] : ['K1', '1']);
     await expect(eimzo.sign('x')).resolves.toBe('SIGNED');
@@ -201,7 +205,9 @@ describe('очередь', () => {
     const { transport } = fakeTransport({
       version: VERSION_486,
       'pkcs7.create_pkcs7': (req) =>
-        req.arguments![0] === 'YmFk' ? { success: false, reason: 'BadPaddingException' } : { success: true, pkcs7_64: 'P' },
+        req.arguments![0] === 'YmFk'
+          ? { success: false, reason: 'BadPaddingException' }
+          : { success: true, pkcs7_64: 'P' },
     });
     const eimzo = createEimzo({ transport });
     await eimzo.loadKey('ckc');

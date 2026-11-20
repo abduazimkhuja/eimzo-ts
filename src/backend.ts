@@ -69,7 +69,8 @@ export function createFetchBackend<TLogin = unknown>(options: FetchBackendOption
     try {
       body = JSON.parse(text);
     } catch (cause) {
-      if (response.ok) throw new EimzoError('BACKEND_ERROR', { detail: 'invalid JSON response' }, { httpStatus, cause });
+      if (response.ok)
+        throw new EimzoError('BACKEND_ERROR', { detail: 'invalid JSON response' }, { httpStatus, cause });
     }
     const record = typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : undefined;
     const message = typeof record?.message === 'string' && record.message ? record.message : undefined;

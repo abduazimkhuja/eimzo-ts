@@ -33,12 +33,16 @@ describe('SSR', () => {
   it('в браузере без WebSocket — WEBSOCKET_UNSUPPORTED, а не NOT_IN_BROWSER', async () => {
     vi.stubGlobal('window', {});
     vi.stubGlobal('WebSocket', undefined);
-    await expect(createWebSocketTransport()({ name: 'version' })).rejects.toMatchObject({ code: 'WEBSOCKET_UNSUPPORTED' });
+    await expect(createWebSocketTransport()({ name: 'version' })).rejects.toMatchObject({
+      code: 'WEBSOCKET_UNSUPPORTED',
+    });
   });
 
   it('Web Worker считается браузером', async () => {
     vi.stubGlobal('WorkerGlobalScope', class {});
     vi.stubGlobal('WebSocket', undefined);
-    await expect(createWebSocketTransport()({ name: 'version' })).rejects.toMatchObject({ code: 'WEBSOCKET_UNSUPPORTED' });
+    await expect(createWebSocketTransport()({ name: 'version' })).rejects.toMatchObject({
+      code: 'WEBSOCKET_UNSUPPORTED',
+    });
   });
 });

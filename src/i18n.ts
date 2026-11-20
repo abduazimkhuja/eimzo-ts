@@ -32,5 +32,10 @@ export function formatEimzoError(
     return error instanceof Error ? error.message : String(error);
   }
   const builtin = builtinMessages[locale as BuiltinLocale];
-  return renderMessage(error.code as EimzoErrorCode, error.params as object, [overrides[locale], builtin, overrides[DEFAULT_LOCALE], ru]);
+  return renderMessage(error.code as EimzoErrorCode, error.params as object, [
+    overrides[locale],
+    builtin,
+    overrides[DEFAULT_LOCALE],
+    ru,
+  ]);
 }

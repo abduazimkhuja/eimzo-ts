@@ -69,7 +69,9 @@ describe('локализация', () => {
   });
 
   it('варианты BACKEND_ERROR и EIMZO_ERROR выбираются по параметрам', () => {
-    expect(formatEimzoError(new EimzoError('BACKEND_ERROR', { status: 503, detail: 'x' }), 'en')).toBe('Server error: x');
+    expect(formatEimzoError(new EimzoError('BACKEND_ERROR', { status: 503, detail: 'x' }), 'en')).toBe(
+      'Server error: x',
+    );
     expect(formatEimzoError(new EimzoError('BACKEND_ERROR', {}), 'en')).toBe('Server error.');
     expect(formatEimzoError(new EimzoError('EIMZO_ERROR', { reason: 'r' }), 'en')).toBe('E-IMZO error: r');
     expect(formatEimzoError(new EimzoError('EIMZO_ERROR', {}), 'en')).toBe('Unknown E-IMZO error.');

@@ -18,7 +18,9 @@ describe('init', () => {
 
   it('сравнивает версии по частям, а не числом major*100+minor', async () => {
     const { transport } = fakeTransport({ version: { success: true, major: '4', minor: '100' } });
-    await expect(createEimzo({ transport, minVersion: '5.0' }).init()).rejects.toMatchObject({ code: 'OUTDATED_VERSION' });
+    await expect(createEimzo({ transport, minVersion: '5.0' }).init()).rejects.toMatchObject({
+      code: 'OUTDATED_VERSION',
+    });
     await expect(createEimzo({ transport, minVersion: '4.86' }).init()).resolves.toEqual({ major: 4, minor: 100 });
   });
 
@@ -53,13 +55,19 @@ describe('проверка ответа транспорта', () => {
 
   it.each(malformed)('ответ %j на вызов плагина — EIMZO_ERROR', async (reply) => {
     const transport = async (req: { name: string }) => (req.name === 'version' ? VERSION_486 : reply) as never;
-    await expect(createEimzo({ transport }).call('pfx', 'list_all_certificates')).rejects.toMatchObject({ code: 'EIMZO_ERROR' });
+    await expect(createEimzo({ transport }).call('pfx', 'list_all_certificates')).rejects.toMatchObject({
+      code: 'EIMZO_ERROR',
+    });
   });
 
   it.each(malformed)('ответ %j на version и apikey — EIMZO_ERROR', async (reply) => {
-    await expect(createEimzo({ transport: async () => reply as never }).getVersion()).rejects.toMatchObject({ code: 'EIMZO_ERROR' });
+    await expect(createEimzo({ transport: async () => reply as never }).getVersion()).rejects.toMatchObject({
+      code: 'EIMZO_ERROR',
+    });
     const transport = async (req: { name: string }) => (req.name === 'version' ? VERSION_486 : reply) as never;
-    await expect(createEimzo({ transport, apiKeys: DEV_API_KEYS }).init()).rejects.toMatchObject({ code: 'EIMZO_ERROR' });
+    await expect(createEimzo({ transport, apiKeys: DEV_API_KEYS }).init()).rejects.toMatchObject({
+      code: 'EIMZO_ERROR',
+    });
   });
 });
 

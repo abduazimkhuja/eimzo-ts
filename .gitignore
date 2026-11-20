@@ -10,3 +10,4 @@ coverage/
 .svelte-kit/
 .angular/
 examples/*/package-lock.json
+*.tgz

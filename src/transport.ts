@@ -37,9 +37,17 @@ export interface WebSocketTransportOptions {
 
 /** Совместимый с `CAPIWS` объект; так устроено браузерное расширение `EIMZOEXT`. */
 export interface CapiwsLike {
-  callFunction(def: EimzoRequest, onSuccess: (event: unknown, data: EimzoResponse) => void, onError: (code?: number) => void): void;
+  callFunction(
+    def: EimzoRequest,
+    onSuccess: (event: unknown, data: EimzoResponse) => void,
+    onError: (code?: number) => void,
+  ): void;
   version(onSuccess: (event: unknown, data: EimzoResponse) => void, onError: (code?: number) => void): void;
-  apikey(keys: unknown[], onSuccess: (event: unknown, data: EimzoResponse) => void, onError: (code?: number) => void): void;
+  apikey(
+    keys: unknown[],
+    onSuccess: (event: unknown, data: EimzoResponse) => void,
+    onError: (code?: number) => void,
+  ): void;
 }
 
 export function defaultEimzoUrl(): string {
@@ -49,7 +57,10 @@ export function defaultEimzoUrl(): string {
 
 /** Страница или Web Worker. На сервере (SSR) E-IMZO недоступен: он работает на компьютере пользователя. */
 function isBrowserLike(): boolean {
-  return typeof window !== 'undefined' || typeof (globalThis as { WorkerGlobalScope?: unknown }).WorkerGlobalScope !== 'undefined';
+  return (
+    typeof window !== 'undefined' ||
+    typeof (globalThis as { WorkerGlobalScope?: unknown }).WorkerGlobalScope !== 'undefined'
+  );
 }
 
 /** Как `CAPIWS` в e-imzo.js: одно WebSocket-соединение на каждый вызов. */
@@ -130,7 +141,10 @@ export function createWebSocketTransport(options: WebSocketTransportOptions = {}
     });
 }
 
-export function createCapiwsTransport(capiws: CapiwsLike, options: Pick<WebSocketTransportOptions, 'timeoutMs'> = {}): Transport {
+export function createCapiwsTransport(
+  capiws: CapiwsLike,
+  options: Pick<WebSocketTransportOptions, 'timeoutMs'> = {},
+): Transport {
   return (request, { signal } = {}) => {
     let timer: ReturnType<typeof setTimeout> | undefined;
     // Расширение не умеет отменять вызов: отмена только прекращает ожидание ответа.
