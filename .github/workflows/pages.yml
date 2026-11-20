@@ -29,6 +29,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run site # _site/: документация, sitemap.xml, llms.txt, llms-full.txt, демо
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
       - id: deployment
         uses: actions/deploy-pages@v4
