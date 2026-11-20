@@ -31,4 +31,4 @@ jobs:
       - run: npm run site # _site/: документация, sitemap.xml, llms.txt, llms-full.txt, демо
       - uses: actions/upload-pages-artifact@v3
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
